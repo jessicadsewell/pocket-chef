@@ -15,9 +15,9 @@ import { AppController } from './app.controller';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'pocketchef',
-      password: 'pocketchef',
-      database: 'pocketchef',
+      username: 'PocketChef',
+      password: 'PocketChef',
+      database: 'PocketChef',
       entities: [User, QuizResponse, MealPlan, Recipe, Ingredient],
       synchronize: true, // Set to false in production
     }),

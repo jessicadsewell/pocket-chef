@@ -1,11 +1,11 @@
-version: '3.8'
+version: "3.8"
 services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: pocketchef
-      POSTGRES_PASSWORD: pocketchef
-      POSTGRES_DB: pocketchef
+      POSTGRES_USER: PocketChef
+      POSTGRES_PASSWORD: PocketChef
+      POSTGRES_DB: PocketChef
     ports:
       - "5432:5432"
     volumes:

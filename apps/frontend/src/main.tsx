@@ -44,7 +44,7 @@ const appElement = document.getElementById("app");
 if (appElement) {
   createInertiaApp({
     id: "app",
-    title: (title) => `${title} - Pocket Chef`,
+    title: (title) => `${title} - PocketChef`,
     resolve: (name) =>
       resolvePageComponent(name, import.meta.glob("./Pages/**/*.tsx")),
     setup({ el, App, props }) {

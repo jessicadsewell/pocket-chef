@@ -1,4 +1,4 @@
-# 🍳 Pocket Chef
+# 🍳 PocketChef
 
 A modern meal planning application built with Inertia.js, allowing users to plan meals, discover recipes, and manage their weekly menu with ease.
 

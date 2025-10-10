@@ -11,7 +11,6 @@ import {
   MenuItems,
 } from "@headlessui/react";
 
-// Define types for auth and user
 interface User {
   id: number;
   name: string;
@@ -73,7 +72,7 @@ const NavBar = () => {
                   href="/"
                   className="flex flex-shrink-0 items-center gap-2"
                 >
-                  <div className="h-10 w-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                  <div className="h-10 w-10 bg-gradient-to-r from-gray-500 to-blue-500 rounded-lg flex items-center justify-center">
                     <Icon
                       name="restaurant-2-fill"
                       className="text-white"
@@ -113,7 +112,7 @@ const NavBar = () => {
                   <Menu as="div" className="relative ml-3">
                     <MenuButton className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="sr-only">Open user menu</span>
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center text-white font-semibold">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-r from-gray-400 to-blue-500 flex items-center justify-center text-white font-semibold">
                         {user.name.charAt(0).toUpperCase()}
                       </div>
                     </MenuButton>
@@ -146,7 +145,7 @@ const NavBar = () => {
                           method="post"
                           as="button"
                           onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 data-[focus]:bg-gray-100"
+                          className="block w-full text-left px-4 py-2 text-sm text-blue-600 data-[focus]:bg-gray-100"
                         >
                           Sign out
                         </Link>
@@ -163,7 +162,7 @@ const NavBar = () => {
                     </Link>
                     <Link
                       href="/register"
-                      className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:from-orange-600 hover:to-red-600"
+                      className="bg-gradient-to-r from-gray-500 to-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:from-gray-600 hover:to-blue-600"
                     >
                       Sign Up
                     </Link>
