@@ -13,6 +13,7 @@
     "@headlessui/react": "^2.2.9",
     "@inertiajs/core": "^2.1.10",
     "@inertiajs/react": "^2.2.7",
+    "@supabase/supabase-js": "^2.75.0",
     "axios": "^1.12.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

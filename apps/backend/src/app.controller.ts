@@ -10,9 +10,8 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import { SupabaseAuthGuard } from './auth/supabase-auth.guard';
+import { SupabaseService } from './supabase/supabase.service';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
 class LoginDto {
@@ -41,7 +40,7 @@ class RegisterDto {
 export class AppController {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService,
+    private supabaseService: SupabaseService,
   ) {}
 
   @Get()
@@ -57,24 +56,30 @@ export class AppController {
   @Post('login')
   async login(@Body() body: LoginDto, @Res() res: Response) {
     try {
-      const user = await this.userService.findByEmail(body.email);
-      if (!user || !(await bcrypt.compare(body.password, user.password))) {
+      // Sign in with Supabase
+      const { data, error } = await this.supabaseService.signIn(
+        body.email,
+        body.password,
+      );
+
+      if (error || !data.user || !data.session) {
         return res.inertia.render('Auth/Login', {
           error: 'Invalid credentials',
         });
       }
-      const token = this.jwtService.sign({
-        email: user.email,
-        id: user.id,
-        name: user.name,
-      });
-      // Set token in response and redirect
+
+      // Share user and token with frontend
       res.inertia.share({
         auth: {
-          user: { id: user.id, name: user.name, email: user.email },
-          token,
+          user: {
+            id: data.user.id,
+            name: data.user.user_metadata?.name || data.user.email,
+            email: data.user.email,
+          },
+          token: data.session.access_token,
         },
       });
+
       return res.inertia.redirect('/');
     } catch (error) {
       return res.inertia.render('Auth/Login', {
@@ -84,8 +89,9 @@ export class AppController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(SupabaseAuthGuard)
   async logout(@Res() res: Response) {
+    await this.supabaseService.signOut();
     res.inertia.share({ auth: null });
     return res.inertia.redirect('/login');
   }
@@ -95,10 +101,33 @@ export class AppController {
     return res.inertia.render('Auth/Register');
   }
 
+  @Get('auth/callback')
+  async authCallback(@Res() res: Response) {
+    return res.inertia.render('Auth/Callback');
+  }
+
+  @Get('auth/reset-password')
+  async resetPasswordPage(@Res() res: Response) {
+    return res.inertia.render('Auth/ResetPassword');
+  }
+
   @Post('register')
   async register(@Body() body: RegisterDto, @Res() res: Response) {
     try {
-      await this.userService.create(body);
+      // Sign up with Supabase
+      const { data, error } = await this.supabaseService.signUp(
+        body.email,
+        body.password,
+        { name: body.name },
+      );
+
+      if (error) {
+        return res.inertia.render('Auth/Register', {
+          error: error.message || 'Registration failed',
+        });
+      }
+
+      // Success! Supabase Auth handles user storage
       return res.inertia.redirect('/login');
     } catch (error) {
       return res.inertia.render('Auth/Register', {
@@ -126,7 +155,6 @@ export class AppController {
   }
 
   @Get('meal-plans')
-  @UseGuards(JwtAuthGuard)
   async mealPlans(@Res() res: Response) {
     // TODO: Fetch meal plans from database
     const meals = [

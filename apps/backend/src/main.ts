@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { customInertiaMiddleware } from './custom-inertia';
 import type { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
 import { ValidationPipe } from '@nestjs/common';
+import { SupabaseService } from './supabase/supabase.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,19 +29,33 @@ async function bootstrap() {
   app.use(customInertiaMiddleware);
 
   // Authentication middleware to set req.user and share auth data with Inertia
-  const jwtService = app.get(JwtService);
+  const supabaseService = app.get(SupabaseService);
   app.use(async (req: Request, res, next) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (token) {
       try {
-        const payload = jwtService.verify(token);
-        req.user = payload;
-        // Share authenticated user data with all Inertia pages
-        res.inertia.share({
-          auth: {
-            user: { id: payload.id, name: payload.name, email: payload.email },
-          },
-        });
+        const userResponse = await supabaseService.getUser(token);
+        if (userResponse.data?.user) {
+          const user = userResponse.data.user;
+          req.user = {
+            id: parseInt(user.id),
+            name: user.user_metadata?.name || user.email,
+            email: user.email,
+          };
+          // Share authenticated user data with all Inertia pages
+          res.inertia.share({
+            auth: {
+              user: {
+                id: user.id,
+                name: user.user_metadata?.name || user.email,
+                email: user.email,
+              },
+            },
+          });
+        } else {
+          req.user = undefined;
+          res.inertia.share({ auth: null });
+        }
       } catch (error) {
         req.user = undefined;
         res.inertia.share({ auth: null });

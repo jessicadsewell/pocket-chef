@@ -192,7 +192,7 @@ const Quiz: React.FC = () => {
             </div>
             <button
               onClick={handleStartQuiz}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
             >
               <Icon name="add-circle-line" size="lg" />
               {pastResponses.length > 0 ? "Take New Quiz" : "Start Quiz"}
@@ -203,10 +203,10 @@ const Quiz: React.FC = () => {
         {/* Empty State */}
         {pastResponses.length === 0 && (
           <div className="bg-gray-800 rounded-xl p-12 text-center">
-            <div className="mx-auto w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
               <Icon
                 name="questionnaire-line"
-                className="text-green-500"
+                className="text-blue-500"
                 size="3xl"
               />
             </div>
@@ -219,7 +219,7 @@ const Quiz: React.FC = () => {
             </p>
             <button
               onClick={handleStartQuiz}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
             >
               <Icon name="play-circle-line" size="lg" />
               Get Started
@@ -243,7 +243,7 @@ const Quiz: React.FC = () => {
                     <div className="flex items-center gap-3 mb-2">
                       <Icon
                         name="checkbox-circle-fill"
-                        className="text-green-500"
+                        className="text-blue-500"
                         size="lg"
                       />
                       <h3 className="text-lg font-semibold text-white">
@@ -295,7 +295,7 @@ const Quiz: React.FC = () => {
 
                     {/* Related Meal Plan */}
                     {response.mealPlanId && (
-                      <div className="mt-4 flex items-center gap-2 text-sm text-green-400">
+                      <div className="mt-4 flex items-center gap-2 text-sm text-blue-400">
                         <Icon name="restaurant-2-line" />
                         <span>Meal Plan: {response.mealPlanName}</span>
                       </div>
@@ -308,7 +308,7 @@ const Quiz: React.FC = () => {
                   {!response.mealPlanId ? (
                     <button
                       onClick={() => handleGenerateMealPlan(response.id)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-green-500/20"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-blue-700 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-blue-500/20"
                     >
                       <Icon name="magic-line" />
                       Generate AI Meal Plan
@@ -346,7 +346,7 @@ const Quiz: React.FC = () => {
                 {/* Progress Bar */}
                 <div className="h-2 bg-gray-700">
                   <div
-                    className="h-full bg-green-600 transition-all duration-300"
+                    className="h-full bg-blue-600 transition-all duration-300"
                     style={{
                       width: `${
                         ((currentStep + 1) / quizQuestions.length) * 100
@@ -387,7 +387,7 @@ const Quiz: React.FC = () => {
                               }
                               className={`p-4 rounded-lg border-2 text-left transition-all ${
                                 quizAnswers[currentQuestion.id] === option
-                                  ? "border-green-500 bg-green-500/10 text-white"
+                                  ? "border-blue-500 bg-blue-500/10 text-white"
                                   : "border-gray-700 bg-gray-900/50 text-gray-300 hover:border-gray-600"
                               }`}
                             >
@@ -395,13 +395,13 @@ const Quiz: React.FC = () => {
                                 <div
                                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                                     quizAnswers[currentQuestion.id] === option
-                                      ? "border-green-500"
+                                      ? "border-blue-500"
                                       : "border-gray-600"
                                   }`}
                                 >
                                   {quizAnswers[currentQuestion.id] ===
                                     option && (
-                                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                                    <div className="w-3 h-3 rounded-full bg-blue-500" />
                                   )}
                                 </div>
                                 <span className="font-medium">{option}</span>
@@ -434,7 +434,7 @@ const Quiz: React.FC = () => {
                                 }}
                                 className={`p-4 rounded-lg border-2 text-left transition-all ${
                                   isSelected
-                                    ? "border-green-500 bg-green-500/10 text-white"
+                                    ? "border-blue-500 bg-blue-500/10 text-white"
                                     : "border-gray-700 bg-gray-900/50 text-gray-300 hover:border-gray-600"
                                 }`}
                               >
@@ -442,7 +442,7 @@ const Quiz: React.FC = () => {
                                   <div
                                     className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                                       isSelected
-                                        ? "border-green-500 bg-green-500"
+                                        ? "border-blue-500 bg-blue-500"
                                         : "border-gray-600"
                                     }`}
                                   >
@@ -464,7 +464,7 @@ const Quiz: React.FC = () => {
                     {currentQuestion.type === "textarea" && (
                       <div>
                         {currentQuestion.description && (
-                          <div className="mb-4 flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                          <div className="mb-4 flex items-start items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                             <Icon
                               name="ai-generate"
                               className="text-blue-400 mt-0.5"
@@ -487,7 +487,7 @@ const Quiz: React.FC = () => {
                           }
                           placeholder={currentQuestion.placeholder}
                           rows={6}
-                          className="w-full px-4 py-3 bg-gray-900/50 border-2 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all resize-none"
+                          className="w-full px-4 py-3 bg-gray-900/50 border-2 border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all resize-none"
                         />
                         <p className="mt-2 text-xs text-gray-400">
                           Optional: Skip this if you don't have any additional
@@ -511,7 +511,7 @@ const Quiz: React.FC = () => {
                     {isLastStep ? (
                       <button
                         onClick={handleSubmitQuiz}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all shadow-lg"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-gray-600 hover:from-blue-700 hover:to-blue-700 text-white font-semibold rounded-lg transition-all shadow-lg shadow-blue-500/20"
                       >
                         Complete & Save
                         <Icon name="check-line" />
@@ -520,7 +520,7 @@ const Quiz: React.FC = () => {
                       <button
                         onClick={handleNext}
                         disabled={!canProceed}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         Next
                         <Icon name="arrow-right-line" />

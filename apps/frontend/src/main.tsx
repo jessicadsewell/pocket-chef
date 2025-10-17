@@ -3,9 +3,11 @@ import { createInertiaApp } from "@inertiajs/react";
 import axios from "axios";
 import "remixicon/fonts/remixicon.css";
 import "./index.css";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Configure axios defaults
-axios.defaults.baseURL = "http://localhost:3000";
+// Note: Using relative URL because Vite proxy forwards to backend
+axios.defaults.baseURL = "";
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["Accept"] = "application/json";
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
@@ -22,9 +24,13 @@ async function resolvePageComponent(
   pages: Record<string, () => Promise<any>>
 ) {
   const pageKey = Object.keys(pages).find((key) => key.endsWith(`${name}.tsx`));
+
   if (!pageKey) {
+    console.error(`Page not found: ${name}`);
+    console.error("Available pages:", Object.keys(pages));
     throw new Error(`Page not found: ${name}`);
   }
+
   return (await pages[pageKey]()).default;
 }
 
@@ -57,7 +63,11 @@ if (appElement) {
         ] = `Bearer ${pageProps.auth.token}`;
       }
 
-      createRoot(el).render(<App {...props} />);
+      createRoot(el).render(
+        <AuthProvider>
+          <App {...props} />
+        </AuthProvider>
+      );
     },
     progress: {
       color: "#4B5563",

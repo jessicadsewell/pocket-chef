@@ -7,15 +7,15 @@ import { Repository } from 'typeorm';
 export class RecipeService {
   constructor(
     @InjectRepository(Recipe)
-    private recipeRepository: Repository<Recipe>
+    private recipeRepository: Repository<Recipe>,
   ) {}
 
   async findAll(): Promise<Recipe[]> {
     return this.recipeRepository.find();
   }
 
-  async create(title: string, instructions: string, ingredients: { name: string, quantity: string }[]): Promise<Recipe> {
-    const recipe = this.recipeRepository.create({ title, instructions, ingredients });
+  async create(recipeData: Partial<Recipe>): Promise<Recipe> {
+    const recipe = this.recipeRepository.create(recipeData);
     return this.recipeRepository.save(recipe);
   }
 }

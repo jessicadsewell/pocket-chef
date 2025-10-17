@@ -1,6 +1,6 @@
-import { Link, usePage } from "@inertiajs/react";
-import axios from "axios";
+import { Link, usePage, router } from "@inertiajs/react";
 import Icon from "../Icon";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   Disclosure,
   DisclosureButton,
@@ -28,20 +28,34 @@ interface PageProps {
 }
 
 const NavBar = () => {
-  const { props } = usePage<PageProps>();
-  const user = props.auth?.user;
+  const { url } = usePage<PageProps>();
+  const {
+    user,
+    signOut,
+    getUserDisplayName,
+    getUserAvatar,
+    getUserEmail,
+    isGoogleUser,
+  } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    axios.defaults.headers.common["Authorization"] = "";
+  const handleLogout = async () => {
+    await signOut();
+    router.visit("/login");
   };
 
   const navigation = [
-    { name: "Home", href: "/", current: true },
-    { name: "Recipes", href: "/recipes", current: false },
-    { name: "Meal Plans", href: "/meal-plans", current: false },
-    { name: "Quiz", href: "/quiz", current: false },
+    { name: "Home", href: "/" },
+    { name: "Recipes", href: "/recipes" },
+    { name: "Meal Plans", href: "/meal-plans" },
+    { name: "Quiz", href: "/quiz" },
   ];
+
+  const isCurrentPage = (href: string) => {
+    if (href === "/") {
+      return url === "/";
+    }
+    return url.startsWith(href);
+  };
 
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
@@ -51,7 +65,7 @@ const NavBar = () => {
     <Disclosure as="nav" className="bg-gray-800 shadow-lg">
       {({ open }) => (
         <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 w-full">
             <div className="relative flex h-16 items-center justify-between">
               {/* Mobile menu button */}
               <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -65,8 +79,8 @@ const NavBar = () => {
                 </DisclosureButton>
               </div>
 
-              {/* Logo and Nav Links */}
-              <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+              {/* Logo and Navigation - Left Side */}
+              <div className="flex items-center space-x-6">
                 {/* Logo */}
                 <Link
                   href="/"
@@ -85,43 +99,72 @@ const NavBar = () => {
                 </Link>
 
                 {/* Desktop Navigation */}
-                <div className="hidden sm:ml-6 sm:block">
+                <div className="hidden sm:flex">
                   <div className="flex space-x-4">
-                    {navigation.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={classNames(
-                          item.current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
-                        )}
-                        aria-current={item.current ? "page" : undefined}
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
+                    {navigation.map((item) => {
+                      const current = isCurrentPage(item.href);
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className={classNames(
+                            current
+                              ? "bg-gray-900 text-white"
+                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                            "rounded-md px-3 py-2 text-sm font-medium"
+                          )}
+                          aria-current={current ? "page" : undefined}
+                        >
+                          {item.name}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
 
               {/* Right side - User menu */}
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+              <div className="flex items-center">
                 {user ? (
                   <Menu as="div" className="relative ml-3">
                     <MenuButton className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="sr-only">Open user menu</span>
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-r from-gray-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                        {user.name.charAt(0).toUpperCase()}
+                      <div className="h-8 w-8 rounded-full overflow-hidden">
+                        <img
+                          src={getUserAvatar()}
+                          alt={getUserDisplayName()}
+                          className="h-8 w-8 object-cover"
+                          onError={(e) => {
+                            // Fallback to initials if image fails to load
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            target.nextElementSibling?.classList.remove(
+                              "hidden"
+                            );
+                          }}
+                        />
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-r from-gray-400 to-blue-500 flex items-center justify-center text-white font-semibold hidden">
+                          {getUserDisplayName().charAt(0).toUpperCase()}
+                        </div>
                       </div>
                     </MenuButton>
-                    <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <div className="px-4 py-2 border-b">
-                        <p className="text-sm font-semibold text-gray-900">
-                          {user.name}
-                        </p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
+                    <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="px-4 py-3 border-b">
+                        <div className="flex items-center space-x-3">
+                          <img
+                            src={getUserAvatar()}
+                            alt={getUserDisplayName()}
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 truncate">
+                              {getUserDisplayName()}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              {getUserEmail()}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       <MenuItem>
                         <Link
@@ -140,15 +183,12 @@ const NavBar = () => {
                         </Link>
                       </MenuItem>
                       <MenuItem>
-                        <Link
-                          href="/logout"
-                          method="post"
-                          as="button"
+                        <button
                           onClick={handleLogout}
                           className="block w-full text-left px-4 py-2 text-sm text-blue-600 data-[focus]:bg-gray-100"
                         >
                           Sign out
-                        </Link>
+                        </button>
                       </MenuItem>
                     </MenuItems>
                   </Menu>
@@ -175,22 +215,25 @@ const NavBar = () => {
           {/* Mobile menu */}
           <DisclosurePanel className="sm:hidden">
             <div className="space-y-1 px-2 pb-3 pt-2">
-              {navigation.map((item) => (
-                <DisclosureButton
-                  key={item.name}
-                  as={Link}
-                  href={item.href}
-                  className={classNames(
-                    item.current
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium"
-                  )}
-                  aria-current={item.current ? "page" : undefined}
-                >
-                  {item.name}
-                </DisclosureButton>
-              ))}
+              {navigation.map((item) => {
+                const current = isCurrentPage(item.href);
+                return (
+                  <DisclosureButton
+                    key={item.name}
+                    as={Link}
+                    href={item.href}
+                    className={classNames(
+                      current
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                      "block rounded-md px-3 py-2 text-base font-medium"
+                    )}
+                    aria-current={current ? "page" : undefined}
+                  >
+                    {item.name}
+                  </DisclosureButton>
+                );
+              })}
             </div>
           </DisclosurePanel>
         </>

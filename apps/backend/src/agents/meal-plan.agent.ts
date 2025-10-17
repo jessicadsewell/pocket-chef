@@ -2,6 +2,8 @@
  * Meal Plan Agent - Handles LLM interactions for meal planning
  */
 
+import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 import {
   getMealPlanSystemPrompt,
   getWeeklyMealPlanPrompt,
@@ -97,10 +99,6 @@ export abstract class BaseLLMAgent {
   ): Promise<string>;
 }
 
-/**
- * OpenAI implementation example
- * Install: npm install openai
- */
 export class OpenAIAgent extends BaseLLMAgent {
   async complete(
     systemPrompt: string,
@@ -111,33 +109,22 @@ export class OpenAIAgent extends BaseLLMAgent {
       responseFormat?: 'json' | 'text';
     } = {},
   ): Promise<string> {
-    // TODO: Replace with actual OpenAI SDK implementation
-    // Example:
-    // const openai = new OpenAI({ apiKey: this.apiKey });
-    // const completion = await openai.chat.completions.create({
-    //   model: this.model,
-    //   messages: [
-    //     { role: 'system', content: systemPrompt },
-    //     { role: 'user', content: userPrompt }
-    //   ],
-    //   temperature: options.temperature ?? 0.7,
-    //   max_tokens: options.maxTokens ?? 4000,
-    //   response_format: options.responseFormat === 'json'
-    //     ? { type: 'json_object' }
-    //     : undefined
-    // });
-    // return completion.choices[0].message.content;
-
-    throw new Error(
-      'OpenAI agent not implemented. Add your API key and implementation.',
-    );
+    const openai = new OpenAI({ apiKey: this.apiKey });
+    const completion = await openai.chat.completions.create({
+      model: this.model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: options.temperature ?? 0.7,
+      max_tokens: options.maxTokens ?? 4000,
+      response_format:
+        options.responseFormat === 'json' ? { type: 'json_object' } : undefined,
+    });
+    return completion.choices[0].message.content || '';
   }
 }
 
-/**
- * Anthropic Claude implementation example
- * Install: npm install @anthropic-ai/sdk
- */
 export class AnthropicAgent extends BaseLLMAgent {
   async complete(
     systemPrompt: string,
@@ -148,23 +135,16 @@ export class AnthropicAgent extends BaseLLMAgent {
       responseFormat?: 'json' | 'text';
     } = {},
   ): Promise<string> {
-    // TODO: Replace with actual Anthropic SDK implementation
-    // Example:
-    // const anthropic = new Anthropic({ apiKey: this.apiKey });
-    // const message = await anthropic.messages.create({
-    //   model: this.model,
-    //   max_tokens: options.maxTokens ?? 4000,
-    //   temperature: options.temperature ?? 0.7,
-    //   system: systemPrompt,
-    //   messages: [
-    //     { role: 'user', content: userPrompt }
-    //   ]
-    // });
-    // return message.content[0].text;
-
-    throw new Error(
-      'Anthropic agent not implemented. Add your API key and implementation.',
-    );
+    const anthropic = new Anthropic({ apiKey: this.apiKey });
+    const message = await anthropic.messages.create({
+      model: this.model,
+      max_tokens: options.maxTokens ?? 4000,
+      temperature: options.temperature ?? 0.7,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    });
+    const content = message.content[0];
+    return content.type === 'text' ? content.text : '';
   }
 }
 

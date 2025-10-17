@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Ingredient } from './ingredient.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity()
 export class Recipe {
@@ -7,11 +7,41 @@ export class Recipe {
   id: number;
 
   @Column()
-  title: string;
+  name: string;
 
   @Column()
-  instructions: string;
+  prepTime: number;
 
-  @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe, { cascade: true })
-  ingredients: Ingredient[];
+  @Column()
+  cookTime: number;
+
+  @Column()
+  servings: number;
+
+  @Column()
+  difficulty: string;
+
+  @Column()
+  cuisine: string;
+
+  @Column('simple-array')
+  ingredients: string[];
+
+  @Column('simple-array')
+  instructions: string[];
+
+  @Column('jsonb')
+  nutrition: {
+    calories: number;
+    protein: string;
+    carbs: string;
+    fat: string;
+    fiber?: string;
+  };
+
+  @Column('simple-array', { nullable: true })
+  tags: string[];
+
+  @ManyToOne(() => User, (user) => user.recipes)
+  user: User;
 }
